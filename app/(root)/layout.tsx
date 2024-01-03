@@ -1,10 +1,16 @@
-import React from 'react'
-import HomePage from './(home)/page'
+import React from "react";
+import HomePage from "./(home)/page";
+import Navbar from "@/components/shared/navbar";
+import Sidebar from "@/components/shared/sidebar";
 
-const layout = () => {
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div><HomePage/></div>
-  )
-}
+    <div>
+      <Navbar />
+      <Sidebar />
+      {children}
+    </div>
+  );
+};
 
-export default layout
+export default RootLayout;
