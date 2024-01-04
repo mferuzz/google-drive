@@ -19,6 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+    
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body>
@@ -28,7 +29,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
             storageKey="google-drive">
-            <Toaster position="top-center"/>
+            <Toaster position="top-center" />
             <ModalProvider />
             {children}
           </ThemeProvider>

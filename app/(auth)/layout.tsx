@@ -1,6 +1,6 @@
 import Navbar from "@/components/shared/navbar";
 import Sidebar from "@/components/shared/sidebar";
-import { ChildProps } from "@/types/insex";
+import { ChildProps } from "@/types";
 import React from "react";
 
 const AuthLayout = ({ children }: ChildProps) => {
