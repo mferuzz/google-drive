@@ -7,27 +7,120 @@ import {
   Trash,
   UserPlus,
 } from "lucide-react";
-import React from "react";
+import React, { MouseEvent } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ListActionsProps {
   item: IFolderAndFile;
+  isStartEditing: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-const ListAction = ({ item }: ListActionsProps) => {
+const ListAction = ({ item, isStartEditing }: ListActionsProps) => {
+  const { refresh } = useRouter();
+
+  const type = item.size ? "files" : "folders";
+
+  // DELETE FUNCTION ->>
+  const onDelete = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+    const ref = doc(db, type, item.id);
+    const promise = setDoc(ref, {
+      ...item,
+      isArchive: true,
+      archivedTime: new Date(),
+    }).then(() => refresh());
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Archived!",
+      error: "Failed to archive",
+    });
+  };
+
+  // isSTAR FUNCTION ->>
+  const onAddStar = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    const ref = doc(db, type, item.id);
+
+    const promise = setDoc(ref, {
+      ...item,
+      isStar: true,
+    }).then(() => refresh());
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Starred!",
+      error: "Failed to star",
+    });
+  };
+
+  const onRemoveStar = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+    const ref = doc(db, type, item.id);
+
+    const promise = setDoc(ref, {
+      ...item,
+      isStar: false,
+    }).then(() => refresh());
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Unstarred!",
+      error: "Failed to unstar",
+    });
+  };
+
+  // DOWNLOAD FUNCTION ->>
+  const onDownload = () => {
+    if (!item.size) {
+      toast.error("This is a folder, not a file");
+      return;
+    }
+    window.open(item.image, "_blank");
+  };
+
+  // ONSHARE FUNCTION ->>
+  const onShare = () => {
+    if (!item.size) {
+      toast.error("You can't share a folder");
+      return;
+    }
+
+    navigator.clipboard.writeText(item.image);
+    toast.success("Link copied to clipboard!");
+  };
+
   return (
     <div className="flex items-center space-x-1">
       <div
         role="button"
-        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition opacity-0 group-hover:opacity-100">
+        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition opacity-0 group-hover:opacity-100"
+        onClick={onDelete}>
         <Trash className="w-4 h-4 opacity-50" />
       </div>
-      <div
-        role="button"
-        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition opacity-0 group-hover:opacity-100">
-        <Star className="w-4 h-4 opacity-50" />
-      </div>
+
+      {item.isStar ? (
+        <div
+          role="button"
+          className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition opacity-0 group-hover:opacity-100"
+          onClick={onRemoveStar}>
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        </div>
+      ) : (
+        <div
+          role="button"
+          className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition opacity-0 group-hover:opacity-100"
+          onClick={onAddStar}>
+          <Star className="w-4 h-4 opacity-50" />
+        </div>
+      )}
 
       <Popover>
         <PopoverTrigger className="flex justify-start" asChild>
@@ -41,26 +134,30 @@ const ListAction = ({ item }: ListActionsProps) => {
         <PopoverContent className="px-0 py-2">
           <div
             className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
+            role="button"
+            onClick={onDownload}>
             <Download className="w-4 h-4" />
             <span>Download</span>
           </div>
           <div
             className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
+            role="button"
+            onClick={isStartEditing}>
             <Pencil className="w-4 h-4" />
             <span>Rename</span>
           </div>
           <Separator />
           <div
             className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
+            role="button"
+            onClick={onShare}>
             <UserPlus className="w-4 h-4" />
             <span>Share</span>
           </div>
           <div
             className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
+            role="button"
+            onClick={onDelete}>
             <Trash className="w-4 h-4" />
             <span>Move to trash</span>
           </div>
