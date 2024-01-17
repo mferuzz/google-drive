@@ -49,7 +49,6 @@ const Header = ({ label, isHome }: HeaderProps) => {
             </>
           ) : (
             <>
-              {" "}
               <div
                 role="button"
                 className="p-2 hover:bg-secondary rounded-full transition"

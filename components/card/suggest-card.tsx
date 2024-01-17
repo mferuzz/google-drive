@@ -1,3 +1,4 @@
+'use client'
 import { defineImageAndFile } from "@/lib/utils";
 import { IFolderAndFile } from "@/types";
 import { File, Paperclip, Save, X } from "lucide-react";
