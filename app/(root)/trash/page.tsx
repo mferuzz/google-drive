@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TrashItem from "@/components/shared/trash-item";
+import Empty from "@/components/shared/empty";
 
 const getData = async (uid: string, type: "files" | "folders") => {
   let data: any[] = [];
@@ -34,20 +35,24 @@ const TrashPage = async () => {
   return (
     <>
       <Header label="Trash" isHome={false} />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Archived time</TableHead>
-            <TableHead>File size</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...folders, ...files].map((folder) => (
-            <TrashItem key={folder.id} item={folder} />
-          ))}
-        </TableBody>
-      </Table>
+      {[...files, ...folders].length === 0 ? (
+        <Empty />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Archived time</TableHead>
+              <TableHead>File size</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[...folders, ...files].map((folder) => (
+              <TrashItem key={folder.id} item={folder} />
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 };

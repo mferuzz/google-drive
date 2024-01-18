@@ -1,4 +1,5 @@
 import SuggestCard from "@/components/card/suggest-card";
+import Empty from "@/components/shared/empty";
 import Header from "@/components/shared/header";
 import ListItem from "@/components/shared/list-item";
 import {
@@ -35,29 +36,35 @@ const StarredPage = async () => {
   return (
     <>
       <Header label="Starred" isHome={false} />
-      <div className="text-sm opacity-75 mt-6">Suggested</div>
-      <div className="grid grid-cols-4 gap-4 mt-4">
-        {files.map((file) => (
-          <SuggestCard item={file} key={file.id} />
-        ))}
-      </div>
-      <div className="text-sm opacity-75 mt-6">Folders</div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Owner</TableHead>
-            <TableHead>Created at</TableHead>
-            <TableHead>File size</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {folders.map((folder) => (
-            <ListItem key={folder.id} item={folder} />
-          ))}
-        </TableBody>
-      </Table>
+      {[...folders, ...files].length == 0 ? (
+        <Empty />
+      ) : (
+        <>
+          <div className="text-sm opacity-75 mt-6">Suggested</div>
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            {files.map((file) => (
+              <SuggestCard item={file} key={file.id} />
+            ))}
+          </div>
+          <div className="text-sm opacity-75 mt-6">Folders</div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Created at</TableHead>
+                <TableHead>File size</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {folders.map((folder) => (
+                <ListItem key={folder.id} item={folder} />
+              ))}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </>
   );
 };

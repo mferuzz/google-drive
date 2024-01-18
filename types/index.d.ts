@@ -16,3 +16,9 @@ export interface IFolderAndFile {
   isStar: boolean;
   archivedTime: Timestamp;
 }
+
+export interface DocIdProps {
+  params: {
+    documentId: string;
+  };
+}

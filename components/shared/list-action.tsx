@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface ListActionsProps {
@@ -22,14 +22,18 @@ interface ListActionsProps {
 
 const ListAction = ({ item, isStartEditing }: ListActionsProps) => {
   const { refresh } = useRouter();
-
+  const { documentId } = useParams();
+  const folderId = documentId as string;
   const type = item.size ? "files" : "folders";
+
+  const ref = documentId
+    ? doc(db, "folders", folderId, "files", item.id)
+    : doc(db, type, item.id);
 
   // DELETE FUNCTION ->>
   const onDelete = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
 
-    const ref = doc(db, type, item.id);
     const promise = setDoc(ref, {
       ...item,
       isArchive: true,
@@ -46,7 +50,6 @@ const ListAction = ({ item, isStartEditing }: ListActionsProps) => {
   // isSTAR FUNCTION ->>
   const onAddStar = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    const ref = doc(db, type, item.id);
 
     const promise = setDoc(ref, {
       ...item,
@@ -62,8 +65,6 @@ const ListAction = ({ item, isStartEditing }: ListActionsProps) => {
 
   const onRemoveStar = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-
-    const ref = doc(db, type, item.id);
 
     const promise = setDoc(ref, {
       ...item,

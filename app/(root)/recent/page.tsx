@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import ListItem from "@/components/shared/list-item";
+import Empty from "@/components/shared/empty";
 
 const getData = async (uid: string, type: "files" | "folders") => {
   let data: any[] = [];
@@ -33,22 +34,26 @@ const RecentPage = async () => {
   return (
     <>
       <Header label="Recent" isHome={false} />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Owner</TableHead>
-            <TableHead>Created at</TableHead>
-            <TableHead>File size</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...folders, ...files].map((folder) => (
-            <ListItem key={folder.id} item={folder} />
-          ))}
-        </TableBody>
-      </Table>
+      {[...files, ...folders].length === 0 ? (
+        <Empty />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Owner</TableHead>
+              <TableHead>Created at</TableHead>
+              <TableHead>File size</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[...folders, ...files].map((folder) => (
+              <ListItem key={folder.id} item={folder} />
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </>
   );
 };

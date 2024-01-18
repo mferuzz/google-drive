@@ -24,7 +24,7 @@ const ListItem = ({ item }: ListItemProps) => {
   const [value, setValue] = useState(item.name);
 
   const inputRef = useRef<ElementRef<"input">>(null);
-  const { refresh } = useRouter();
+  const { refresh, push } = useRouter();
   const { user } = useUser();
 
   const isStartEditing = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -64,7 +64,9 @@ const ListItem = ({ item }: ListItemProps) => {
     }
   };
   return (
-    <TableRow className="group cursor-pointer">
+    <TableRow
+      className="group cursor-pointer"
+      onClick={item.size ? () => {} : () => push(`/document/${item.id}`)}>
       <TableCell className="font-medium">
         {!isEditing ? (
           <div
