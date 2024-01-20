@@ -16,15 +16,16 @@ import { useUser } from "@clerk/nextjs";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PopoverActions = () => {
   const inputRef = useRef<ElementRef<"input">>(null);
-  const { user } = useUser();
   const { onOpen } = useFolder();
+  const { user } = useUser();
   const router = useRouter();
   const { documentId } = useParams();
 
-  const onChnage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
     const file = files[0];
@@ -41,9 +42,9 @@ const PopoverActions = () => {
 
     const folderId = documentId as string;
 
-    const collectionRefs = documentId
-      ? collection(db, "folders", folderId, "files")
-      : collection(db, "files");
+    const collectionRefs = !documentId
+      ? collection(db, "files")
+      : collection(db, "folders", folderId, "files");
 
     const promise = addDoc(collectionRefs, {
       name: file.name,
@@ -52,18 +53,35 @@ const PopoverActions = () => {
       uid: user?.id,
       timestamp: serverTimestamp(),
       isArchive: false,
+      isDocument: false,
     }).then((docs) => {
+      if (documentId) {
+        addDoc(collection(db, "files"), {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          uid: user?.id,
+          timestamp: serverTimestamp(),
+          isArchive: false,
+          isDocument: true,
+        });
+      }
+
       const refs = documentId
         ? ref(storage, `files/${folderId}/${docs.id}/image`)
         : ref(storage, `files/${docs.id}/image`);
+
       uploadString(refs, image, "data_url").then(() => {
         getDownloadURL(refs).then((url) => {
-          const docsRef = documentId
+          const docRefs = documentId
             ? doc(db, "folders", folderId, "files", docs.id)
             : doc(db, "files", docs.id);
-          updateDoc(docsRef, {
+
+          updateDoc(docRefs, {
             image: url,
-          }).then(() => router.refresh());
+          }).then(() => {
+            router.refresh();
+          });
         });
       });
     });
@@ -74,6 +92,7 @@ const PopoverActions = () => {
       error: "Error uploading file",
     });
   };
+
   return (
     <>
       {!documentId && (
@@ -88,7 +107,6 @@ const PopoverActions = () => {
           <Separator />
         </>
       )}
-
       <label>
         <div
           className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
@@ -101,7 +119,7 @@ const PopoverActions = () => {
           className="hidden"
           accept="image/*"
           ref={inputRef}
-          onChange={onChnage}
+          onChange={onChange}
         />
       </label>
 
@@ -117,25 +135,29 @@ const PopoverActions = () => {
           className="hidden"
           accept="image/*"
           ref={inputRef}
-          onChange={onChnage}
+          onChange={onChange}
         />
       </label>
 
       {documentId && (
         <>
           <Separator />
-          <div
-            className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
-            <Trash className="w-4 h-4" />
-            <span>Trash</span>
-          </div>
-          <div
-            className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
-            role="button">
-            <Star className="w-4 h-4" />
-            <span>Starred</span>
-          </div>
+          <Link href={`/document/${documentId}/trash`}>
+            <div
+              className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
+              role="button">
+              <Trash className="w-4 h-4" />
+              <span>Trash</span>
+            </div>
+          </Link>
+          <Link href={`/document/${documentId}/starred`}>
+            <div
+              className="flex items-center hover:bg-secondary transition py-2 px-4 space-x-2 text-sm"
+              role="button">
+              <Star className="w-4 h-4" />
+              <span>Starred</span>
+            </div>
+          </Link>
         </>
       )}
     </>
