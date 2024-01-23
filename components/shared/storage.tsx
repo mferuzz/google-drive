@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { Progress } from "../ui/progress";
 import { byteConverter } from "@/lib/utils";
-import { useSubscription } from "@/hooks/subscription";
+import { useSubscription } from "@/hooks/use-subscription";
 interface StorageProps {
   totalSize: number;
 }

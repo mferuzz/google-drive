@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useSubscription } from "@/hooks/subscription";
+import { useSubscription } from "@/hooks/use-subscription";
 interface PlanCardProps {
   name: string;
   description: string;

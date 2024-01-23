@@ -17,6 +17,7 @@ import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSubscription } from "@/hooks/use-subscription";
 
 const PopoverActions = () => {
   const inputRef = useRef<ElementRef<"input">>(null);
@@ -24,6 +25,7 @@ const PopoverActions = () => {
   const { user } = useUser();
   const router = useRouter();
   const { documentId } = useParams();
+  const { setTotalStorage, totalStorage } = useSubscription();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -81,6 +83,7 @@ const PopoverActions = () => {
             image: url,
           }).then(() => {
             router.refresh();
+            setTotalStorage(totalStorage + file.size);
           });
         });
       });

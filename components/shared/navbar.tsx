@@ -21,16 +21,13 @@ const Navbar = () => {
 
         <div className="flex items-center space-x-2">
           <ModeToggle />
-          <div
-            className="p-2 transition rounded-full hover:bg-secondary"
-            role="button">
-            <HelpCircle className="w-5 h-5" />
-          </div>
-          <div
-            className="p-2 transition rounded-full hover:bg-secondary"
-            role="button">
-            <Settings className="w-5 h-5" />
-          </div>
+          <Link href="/settings">
+            <div
+              className="p-2 transition rounded-full hover:bg-secondary"
+              role="button">
+              <Settings className="w-5 h-5" />
+            </div>
+          </Link>
 
           {userId ? (
             <UserBox />

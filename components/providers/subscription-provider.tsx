@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubscription } from "@/hooks/subscription";
+import { useSubscription } from "@/hooks/use-subscription";
 import { db } from "@/lib/firebase";
 import { ChildProps } from "@/types";
 import { useUser } from "@clerk/nextjs";
